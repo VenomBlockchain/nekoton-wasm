@@ -244,6 +244,30 @@ pub fn extract_contract_data(boc: &str) -> Result<Option<String>, JsValue> {
     }
 }
 
+#[wasm_bindgen(js_name = "walletPrepareDeployHighloadV2")]
+pub fn wallet_prepare_deploy_highload_v2(
+    clock: &ClockWithOffset,
+    public_key: &str,
+    workchain: i8,
+    timeout: u32,
+) -> Result<UnsignedMessage, JsValue> {
+
+    use nt::core::ton_wallet;
+
+    let clock = clock.inner.as_ref();
+    let public_key = parse_public_key(public_key)?;
+    let expiration = nt::core::models::Expiration::Timeout(timeout);
+
+    let inner = ton_wallet::highload_wallet_v2::prepare_deploy(
+        clock,
+        &public_key,
+        workchain,
+        expiration,
+    ).handle_error()?;
+
+    Ok(UnsignedMessage { inner })
+}
+
 #[wasm_bindgen(js_name = "extractPublicKey")]
 pub fn extract_public_key(boc: &str) -> Result<String, JsValue> {
     use nt::core::ton_wallet::{highload_wallet_v2, wallet_v3};
